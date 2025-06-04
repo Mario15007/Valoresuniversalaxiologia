@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Valores Universales</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #ffd700, #ff6b6b, #4d9fec);
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(to right, #ffd700, #ffffff, #4d9fec);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleGlow 2s infinite alternate;
+        }
+        
+        @keyframes titleGlow {
+            0% { text-shadow: 0 0 10px rgba(255, 215, 0, 0.7); }
+            100% { text-shadow: 0 0 20px rgba(77, 159, 236, 0.9), 0 0 30px rgba(255, 107, 107, 0.8); }
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+            color: #e0e0e0;
+        }
+        
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            position: relative;
+        }
+        
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+        }
+        
+        .instructions h2 {
+            margin-bottom: 20px;
+            color: #ffd700;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .instructions-content {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .instruction-card {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 12px;
+            width: 280px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .instruction-card:hover {
+            transform: translateY(-5px);
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .instruction-card i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #4d9fec;
+        }
+        
+        .instruction-card h3 {
+            color: #ffd700;
+            margin-bottom: 10px;
+            font-size: 1.4rem;
+        }
+        
+        .game-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+        }
+        
+        .definitions, .values {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        /* Scrollbar styling */
+        .definitions::-webkit-scrollbar, .values::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .definitions::-webkit-scrollbar-track, .values::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        
+        .definitions::-webkit-scrollbar-thumb, .values::-webkit-scrollbar-thumb {
+            background: rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+        }
+        
+        .definitions::-webkit-scrollbar-thumb:hover, .values::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 215, 0, 0.5);
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ffd700;
+            color: #ffd700;
+            font-size: 1.8rem;
+            position: sticky;
+            top: 0;
+            background: rgba(26, 42, 108, 0.8);
+            z-index: 10;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        
+        .definition-item, .value-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 18px;
+            margin: 18px 0;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+            border: 2px solid transparent;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .definition-item:hover, .value-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .definition-item {
+            border-color: #4d9fec;
+        }
+        
+        .value-item {
+            border-color: #ff6b6b;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+        
+        .definition-text {
+            font-size: 1.15rem;
+            line-height: 1.6;
+        }
+        
+        .value-text {
+            font-size: 1.3rem;
+        }
+        
+        .match-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 250px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .match-title {
+            color: #ffd700;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 1.8rem;
+        }
+        
+        .matches-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            width: 100%;
+        }
+        
+        .match-pair {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 12px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 280px;
+            border: 2px solid #00b894;
+            opacity: 0.9;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .match-pair:hover {
+            transform: scale(1.03);
+        }
+        
+        .matched-value {
+            font-weight: bold;
+            font-size: 1.4rem;
+            color: #00b894;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        
+        .matched-definition {
+            font-size: 1rem;
+            text-align: center;
+            color: #e0e0e0;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 25px;
+        }
+        
+        button {
+            padding: 16px 40px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        #check-btn {
+            background: linear-gradient(to right, #00b894, #00cec9);
+            color: white;
+        }
+        
+        #reset-btn {
+            background: linear-gradient(to right, #ff7675, #d63031);
+            color: white;
+        }
+        
+        button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(2px);
+        }
+        
+        .feedback {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 1.3rem;
+            min-height: 40px;
+            padding: 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .success {
+            background: rgba(46, 204, 113, 0.3);
+            color: #00ff8c;
+            border: 1px solid rgba(46, 204, 113, 0.5);
+        }
+        
+        .error {
+            background: rgba(231, 76, 60, 0.3);
+            color: #ff6b6b;
+            border: 1px solid rgba(231, 76, 60, 0.5);
+        }
+        
+        .counter {
+            text-align: center;
+            font-size: 1.4rem;
+            margin-top: 20px;
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 25px;
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .selected {
+            border: 3px solid #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+            background: rgba(0, 0, 0, 0.4);
+        }
+        
+        .completed {
+            animation: celebrate 0.5s ease;
+        }
+        
+        @keyframes celebrate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ffd700;
+            animation: fall linear forwards;
+        }
+        
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .game-area {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.3rem;
+            }
+            
+            .instructions-content {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-hands-helping"></i> Valores Universales</h1>
+            <p class="subtitle">Relaciona cada definición con el valor universal correspondiente. Un ejercicio para reflexionar sobre los principios que guían nuestra convivencia en sociedad.</p>
+        </header>
+        
+        <div class="game-container">
+            <div class="instructions">
+                <h2><i class="fas fa-info-circle"></i> ¿Cómo jugar?</h2>
+                <div class="instructions-content">
+                    <div class="instruction-card">
+                        <i class="fas fa-mouse-pointer"></i>
+                        <h3>Selecciona</h3>
+                        <p>Haz clic en una definición de la columna izquierda</p>
+                    </div>
+                    <div class="instruction-card">
+                        <i class="fas fa-hand-point-right"></i>
+                        <h3>Relaciona</h3>
+                        <p>Haz clic en el valor que creas que corresponde</p>
+                    </div>
+                    <div class="instruction-card">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>Comprueba</h3>
+                        <p>Verifica tus respuestas cuando hayas terminado</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="game-area">
+                <div class="definitions">
+                    <h2 class="section-title">Definiciones</h2>
+                    <!-- Las definiciones se generarán aleatoriamente con JavaScript -->
+                </div>
+                
+                <div class="values">
+                    <h2 class="section-title">Valores Universales</h2>
+                    <!-- Los valores se generarán aleatoriamente con JavaScript -->
+                </div>
+            </div>
+            
+            <div class="match-area">
+                <h3 class="match-title"><i class="fas fa-link"></i> Tus Relaciones</h3>
+                <div class="matches-container" id="matches-container">
+                    <!-- Las relaciones aparecerán aquí -->
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button id="check-btn"><i class="fas fa-check"></i> Comprobar Respuestas</button>
+                <button id="reset-btn"><i class="fas fa-redo"></i> Reiniciar Juego</button>
+            </div>
+            
+            <div class="feedback" id="feedback"></div>
+            <div class="counter" id="counter">Relacionados: 0/25</div>
+        </div>
+        
+        <footer>
+            <p><i class="fas fa-heart"></i> Juego educativo basado en los valores universales - Contribuye a construir una sociedad más armoniosa</p>
+            <p>© 2023 Educación en Valores | Todos los derechos reservados</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos del DOM
+            const definitionsContainer = document.querySelector('.definitions');
+            const valuesContainer = document.querySelector('.values');
+            const matchesContainer = document.getElementById('matches-container');
+            const checkBtn = document.getElementById('check-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const feedback = document.getElementById('feedback');
+            const counter = document.getElementById('counter');
+            
+            // Lista completa de valores con sus definiciones
+            const valoresCompletos = [
+                { clave: 'respeto', nombre: 'Respeto', definicion: 'Virtud de considerar la dignidad de otras personas, instituciones o ideas.' },
+                { clave: 'igualdad', nombre: 'Igualdad', definicion: 'Principio fundamental que se refiere a tratar a todas las personas de manera equitativa.' },
+                { clave: 'justicia', nombre: 'Justicia', definicion: 'Búsqueda del equilibrio y la intención de dar a cada cual lo que merece.' },
+                { clave: 'tolerancia', nombre: 'Tolerancia', definicion: 'Capacidad de aceptar y respetar las diferencias de culto, religión, idioma e ideología.' },
+                { clave: 'libertad', nombre: 'Libertad', definicion: 'Capacidad de actuar con libre albedrío según los deseos personales sin afectar a terceros.' },
+                { clave: 'bondad', nombre: 'Bondad', definicion: 'Principal virtud moral que supone la tendencia a hacer el bien.' },
+                { clave: 'amistad', nombre: 'Amistad', definicion: 'Vínculo que se establece entre personas que se estiman y aceptan mutuamente.' },
+                { clave: 'amor', nombre: 'Amor', definicion: 'Sentimiento positivo y abierto que conduce a las personas a realizar el bien hacia otros.' },
+                { clave: 'responsabilidad', nombre: 'Responsabilidad', definicion: 'Virtud de hacerse cargo de las decisiones tomadas y de sus consecuencias.' },
+                { clave: 'solidaridad', nombre: 'Solidaridad', definicion: 'Virtud que implica colaborar con la causa de terceros de manera desinteresada.' },
+                { clave: 'paz', nombre: 'Paz', definicion: 'Conjunto de actos que permiten la convivencia en armonía a nivel individual y colectivo.' },
+                { clave: 'verdad', nombre: 'Verdad', definicion: 'Acuerdo que consiste en decir, hacer o pensar conforme aquello que se siente.' },
+                { clave: 'honestidad', nombre: 'Honestidad', definicion: 'Virtud que prioriza la verdad y la coherencia entre lo que se dice y se hace.' },
+                { clave: 'confianza', nombre: 'Confianza', definicion: 'Actitud de esperanza hacia otro o hacia uno mismo.' },
+                { clave: 'honor', nombre: 'Honor', definicion: 'Cualidad de la propia dignidad que lleva al cumplimiento de los deberes.' },
+                { clave: 'honradez', nombre: 'Honradez', definicion: 'Cualidad de actuar con rectitud, integridad y honestidad.' },
+                { clave: 'aprendizaje', nombre: 'Aprendizaje', definicion: 'Absorción de nuevos conocimientos y habilidades para mejorar como persona.' },
+                { clave: 'perseverancia', nombre: 'Perseverancia', definicion: 'Constancia en los intentos por alcanzar una meta, más allá de los obstáculos.' },
+                { clave: 'empatia', nombre: 'Empatía', definicion: 'Capacidad de ponerse en el lugar del otro para entender sus emociones y actitudes.' },
+                { clave: 'valentia', nombre: 'Valentía', definicion: 'Capacidad de llevar adelante las acciones sin temor y con decisión.' },
+                { clave: 'altruismo', nombre: 'Altruismo', definicion: 'Cualidad que implica ayudar a terceros sin esperar nada a cambio.' },
+                { clave: 'gratitud', nombre: 'Gratitud', definicion: 'Reconocimiento de la ayuda recibida de otras personas.' },
+                { clave: 'autodominio', nombre: 'Autodominio', definicion: 'Virtud de controlar los impulsos y las emociones negativas.' },
+                { clave: 'sabiduria', nombre: 'Sabiduría', definicion: 'Adquisición de conocimientos y experiencias para mejorar las actividades sociales.' },
+                { clave: 'compasion', nombre: 'Compasión', definicion: 'Comprensión del sufrimiento de otros, sin dejar de lado sus causas.' }
+            ];
+            
+            // Variables de estado
+            let selectedDefinition = null;
+            let totalMatches = 0;
+            const maxMatches = valoresCompletos.length;
+            
+            // Función para mezclar un array (algoritmo de Fisher-Yates)
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+            
+            // Función para crear elementos del juego
+            function createGameElements() {
+                // Mezclar los valores
+                const shuffledValues = shuffleArray([...valoresCompletos]);
+                
+                // Limpiar contenedores
+                definitionsContainer.innerHTML = '<h2 class="section-title">Definiciones</h2>';
+                valuesContainer.innerHTML = '<h2 class="section-title">Valores Universales</h2>';
+                
+                // Crear elementos de definiciones
+                shuffledValues.forEach(item => {
+                    const definitionEl = document.createElement('div');
+                    definitionEl.className = 'definition-item';
+                    definitionEl.dataset.value = item.clave;
+                    definitionEl.innerHTML = `<p class="definition-text">${item.definicion}</p>`;
+                    definitionsContainer.appendChild(definitionEl);
+                });
+                
+                // Crear elementos de valores (mezclados nuevamente)
+                const shuffledNames = shuffleArray([...valoresCompletos]);
+                shuffledNames.forEach(item => {
+                    const valueEl = document.createElement('div');
+                    valueEl.className = 'value-item';
+                    valueEl.dataset.value = item.clave;
+                    valueEl.textContent = item.nombre;
+                    valuesContainer.appendChild(valueEl);
+                });
+                
+                // Agregar eventos a los nuevos elementos
+                addEventListeners();
+            }
+            
+            // Función para agregar eventos
+            function addEventListeners() {
+                const definitions = document.querySelectorAll('.definition-item');
+                const values = document.querySelectorAll('.value-item');
+                
+                // Agregar eventos de clic a las definiciones
+                definitions.forEach(definition => {
+                    definition.addEventListener('click', function() {
+                        // Deseleccionar cualquier definición previamente seleccionada
+                        definitions.forEach(def => def.classList.remove('selected'));
+                        
+                        // Seleccionar esta definición
+                        this.classList.add('selected');
+                        selectedDefinition = this;
+                        
+                        // Mostrar mensaje para seleccionar un valor
+                        showFeedback('Ahora selecciona el valor que corresponde', 'success');
+                    });
+                });
+                
+                // Agregar eventos de clic a los valores
+                values.forEach(value => {
+                    value.addEventListener('click', function() {
+                        if (!selectedDefinition) {
+                            showFeedback('Primero selecciona una definición', 'error');
+                            return;
+                        }
+                        
+                        const definitionValue = selectedDefinition.dataset.value;
+                        const valueValue = this.dataset.value;
+                        
+                        // Verificar si la combinación es correcta
+                        if (definitionValue === valueValue) {
+                            // Crear elemento de relación
+                            const definitionText = selectedDefinition.querySelector('.definition-text').textContent;
+                            const valueText = this.textContent;
+                            
+                            const matchPair = document.createElement('div');
+                            matchPair.className = 'match-pair';
+                            matchPair.innerHTML = `
+                                <div class="matched-value">${valueText}</div>
+                                <div class="matched-definition">${definitionText}</div>
+                            `;
+                            
+                            matchesContainer.appendChild(matchPair);
+                            
+                            // Deshabilitar elementos usados
+                            selectedDefinition.style.opacity = '0.4';
+                            selectedDefinition.style.cursor = 'not-allowed';
+                            selectedDefinition.classList.remove('selected');
+                            
+                            this.style.opacity = '0.4';
+                            this.style.cursor = 'not-allowed';
+                            
+                            // Actualizar contador
+                            totalMatches++;
+                            counter.textContent = `Relacionados: ${totalMatches}/${maxMatches}`;
+                            
+                            // Feedback
+                            showFeedback('¡Correcto! Relación establecida', 'success');
+                            
+                            // Verificar si se completó el juego
+                            if (totalMatches === maxMatches) {
+                                showFeedback('¡Felicidades! Has completado todas las relaciones correctamente', 'success');
+                                celebrate();
+                            }
+                            
+                            // Resetear selección
+                            selectedDefinition = null;
+                        } else {
+                            showFeedback('Relación incorrecta. Intenta de nuevo', 'error');
+                            selectedDefinition.classList.remove('selected');
+                            selectedDefinition = null;
+                        }
+                    });
+                });
+            }
+            
+            // Comprobar respuestas
+            checkBtn.addEventListener('click', function() {
+                if (totalMatches === maxMatches) {
+                    showFeedback('¡Perfecto! Todas las relaciones son correctas', 'success');
+                } else {
+                    showFeedback(`Tienes ${totalMatches} de ${maxMatches} relaciones. Sigue intentando`, 'error');
+                }
+            });
+            
+            // Reiniciar juego
+            resetBtn.addEventListener('click', function() {
+                // Restablecer contadores
+                totalMatches = 0;
+                counter.textContent = `Relacionados: ${totalMatches}/${maxMatches}`;
+                
+                // Limpiar relaciones
+                matchesContainer.innerHTML = '';
+                
+                feedback.textContent = '';
+                feedback.className = 'feedback';
+                
+                // Resetear selección
+                selectedDefinition = null;
+                
+                // Recrear elementos del juego
+                createGameElements();
+            });
+            
+            // Mostrar feedback
+            function showFeedback(message, type) {
+                feedback.textContent = message;
+                feedback.className = `feedback ${type}`;
+                
+                // Limpiar feedback después de 3 segundos
+                setTimeout(() => {
+                    if (feedback.textContent === message) {
+                        feedback.textContent = '';
+                        feedback.className = 'feedback';
+                    }
+                }, 3000);
+            }
+            
+            // Función de celebración
+            function celebrate() {
+                // Animación de celebración
+                document.querySelector('.game-container').classList.add('completed');
+                setTimeout(() => {
+                    document.querySelector('.game-container').classList.remove('completed');
+                }, 1000);
+                
+                // Crear confeti
+                createConfetti();
+            }
+            
+            // Crear confeti
+            function createConfetti() {
+                const colors = ['#ffd700', '#ff6b6b', '#4d9fec', '#00b894', '#6c5ce7'];
+                const container = document.querySelector('.container');
+                
+                for (let i = 0; i < 150; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.top = '-10px';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.width = Math.random() * 10 + 5 + 'px';
+                    confetti.style.height = Math.random() * 10 + 5 + 'px';
+                    confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
+                    
+                    container.appendChild(confetti);
+                    
+                    // Eliminar confeti después de la animación
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 5000);
+                }
+            }
+            
+            // Iniciar el juego
+            createGameElements();
+        });
+    </script>
+</body>
+</html>
